@@ -1,4 +1,6 @@
 const SECRET_KEY = 'learn-nodejs'
+const jwt = require('jsonwebtoken')
+const moment = require('moment')
 
 function generateAuthToken(username) {
     let data = {
@@ -9,8 +11,6 @@ function generateAuthToken(username) {
     return jwt.sign(data, SECRET_KEY, { expiresIn: '30m'})
 }
 
-const jwt = require('jsonwebtoken')
-
 function verifyJWT(token) {
     return jwt.verify(token, 'learn-nodejs', { complete: true}, (err, decoded) => {
         if (err) {
@@ -19,7 +19,12 @@ function verifyJWT(token) {
     })
 }
 
+function currentDateFormat() {
+    return moment().format('YYYY-MM-DD hh:mm:ss')
+}
+
 module.exports = {
     verifyJWT : verifyJWT,
-    generateAuthToken: generateAuthToken
+    generateAuthToken: generateAuthToken,
+    currentDateFormat : currentDateFormat
 }

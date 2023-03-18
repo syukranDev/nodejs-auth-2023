@@ -20,7 +20,7 @@ const loginUserCtrl = (req) => {
                 //we generate token in utils and saved in db
                 var auth_token = await refreshToken(req)
                 return resolve({
-                    username: username,
+                    username: req.body.username,
                     auth_token: auth_token
                 })
             }
