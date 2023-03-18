@@ -35,27 +35,9 @@ function dbErrorHandler(err) {
 }
 
 function connect() {
-  new mysql.createConnection(dbConfig).connect().then(_pool => {
-      pool = _pool;
-    //   logger.info({
-    //     path: "indexSQL/connect",
-    //     info: "Connection pool created",
-    //     dbServer: dbConfig.server,
-    //     dbName: dbConfig.database
-    //   });
-
-      pool.on('error', () => {});
-
-  }, () => {})
-.catch(err => {
-//   logger.error({
-//     path: "indexSQL/ConnectionPool",
-//     info: "Connection Error",
-//     err_message: err && err.message,
-//     err_stack: err && err.stack,
-//   });
-  throw new Error(err);
-})
+  new mysql.createConnection(dbConfig).connect((e) => {
+    if (e) console.log('error: ' + e.message)
+  })
 }
 
 connect();
