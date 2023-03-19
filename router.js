@@ -6,6 +6,15 @@ const router = express.Router()
 const app = express()
 const controller = require('./model/controller')
 
+app.use(function (request, response, next) {
+    response.header("Access-Control-Allow-Origin", '*');
+    response.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
+    response.header("Access-Control-Allow-Headers", "Authorization, X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept");
+    response.header('Access-Control-Allow-Credentials', true);
+    response.header('Access-Control-Max-Age', '86400');
+    next();
+});
+
 app.disable("x-powered-by")
 
 //To use req.body

@@ -48,10 +48,10 @@ const verifyTokenCtrl = (req) => {
             console.log(validate) 
             if(validate.signature) { 
                 auth.verifyToken(req).then((result) => {
-                    console.log('1')
-                    return resolve({ message: 'success', data : result})
+                    console.log('=========verifytoken middleware succses?')
+                    return resolve({ message: 'success', data : result || null})
                 }).catch((err) => {
-                    return reject (err)
+                    return reject(err)
                 })
             }
             else { 
@@ -71,12 +71,13 @@ const verifyTokenCtrl = (req) => {
 
 const logoutUserCtrl = (req) => {
     return new Promise(async  (resolve, reject) => {
+            console.log('2')
            await auth.clearToken(req)
                 .then((data) => {
-                    return resolve('User logout success')
+                    return resolve({sucessMessage: 'User logout success'})
                 })
                 .catch(err => {
-                    return reject(err)
+                    return reject({ errorMessage: err.message})
                 })
         
     })
@@ -91,7 +92,9 @@ module.exports.verifyToken = function verifyToken(req, res) {
 			return res.send(results);
 		})
 		.catch(reason => {
-			return res.send(reason);
+            console.log('test => ' + reason.statusCode)
+            console.log('test2 => ' + reason)
+			return res.status(reason.statusCode).send(reason);
 			//return res.send(reason);
             
 		})
@@ -134,9 +137,15 @@ module.exports.authValidator = function authValidator(req, res, next) {
             const parsedResponse = JSON.parse(response.body)
             if(response.statusCode == 200){
                 req.auth = Object.assign(req.auth, parsedResponse.data)
+                console.log('00')
                 return next();
             }else{
-                return res.status(response.statusCode)
+                console.log('11')
+                console.log(response.statusCode)
+                // return res.status(response.statusCode)
+                // return res.send(response.body) --working
+                console.log(parsedResponse)
+                return res.status(response.statusCode).send(parsedResponse)
             }
         }
     })
@@ -148,7 +157,7 @@ module.exports.logoutUser = function logoutUser(req, res) {
             return res.send(result)
         })
         .catch(err => {
-            res.send(err)
+            res.status(err.statusCode).send(err)
         })
         
 }

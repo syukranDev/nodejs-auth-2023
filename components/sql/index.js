@@ -94,7 +94,7 @@
 
 
 // Import mysql module
-let mysql = require('mysql');
+let mysql = require('mysql2');
 
 // Define the constructor function
 module.exports.executeQuery = function executeQuery(query, data) {
@@ -106,7 +106,7 @@ module.exports.executeQuery = function executeQuery(query, data) {
   let connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: 'root',
+    password: 'root12345',
     database: 'sit_home'
   });
   
