@@ -13,4 +13,28 @@ module.exports = class auth {
                 })
         })
     }
+
+    clearToken(req){
+        return new Promise((resolve, reject) => {
+            return sql.clearToken(req)
+                .then(result => {
+                    return resolve(result)
+                })
+                .catch(err => {
+                    return reject(err)
+                })
+        })
+    }
+
+    verifyToken(req){
+        return new Promise((resolve, reject) => {
+            return sql.verifyToken(req)
+                .then(result => {
+                    return resolve(result)
+                })
+                .catch(err => {
+                    return reject(err)
+                })
+        })
+    }
 }

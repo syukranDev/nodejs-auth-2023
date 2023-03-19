@@ -25,6 +25,12 @@ router.route('/login')
 router.route('/verifyToken')
     .post((...args) => controller.verifyToken(...args))
 
+router.route('/logout') 
+    .post(
+          (...args) => controller.authValidator(...args),
+          (...args) => controller.logoutUser(...args)
+         )
+
 router.route('/test')
     .post(
           (...args) => controller.authValidator(...args),

@@ -12,6 +12,10 @@ async function refreshToken(req){
     return await auth.refreshToken(req)
 }
 
+async function clearToken(req) {
+    return await auth.clearToken(req)
+}
+
 const loginUserCtrl = (req) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -40,15 +44,22 @@ const verifyTokenCtrl = (req) => {
             req.body.auth_token = bearerToken;
 
             const validate = utils.verifyJWT(bearerToken)
-             console.log(validate) 
+             
+            console.log(validate) 
             if(validate.signature) { 
-                return resolve({ message: 'success'})
+                auth.verifyToken(req).then((result) => {
+                    console.log('1')
+                    return resolve({ message: 'success', data : result})
+                }).catch((err) => {
+                    return reject (err)
+                })
             }
             else { 
                 return reject({
-                statusCode: 401,
-                message: "Unathorized!"
-            }) }
+                    statusCode: 401,
+                    message: "Unathorized!"
+                }) 
+            }
         } else {
             return reject({
                 statusCode: 401,
@@ -58,16 +69,16 @@ const verifyTokenCtrl = (req) => {
     })
 }
 
-const ADLogout = (req) => {
-    return new Promise( (resolve, reject) => {
-        var bearerHeader = req.headers['authorization']
-        if (typeof bearerHeader !== 'undefined'){
-            var bearer = bearerHeader.split(' ')
-            var token = bearer[1]
-            req.body.auth_token = token
-
-            //sql to delete existing token in db
-        }
+const logoutUserCtrl = (req) => {
+    return new Promise(async  (resolve, reject) => {
+           await auth.clearToken(req)
+                .then((data) => {
+                    return resolve('User logout success')
+                })
+                .catch(err => {
+                    return reject(err)
+                })
+        
     })
 }
 
@@ -80,8 +91,9 @@ module.exports.verifyToken = function verifyToken(req, res) {
 			return res.send(results);
 		})
 		.catch(reason => {
-			return res.status(reason.statusCode).send(reason);
+			return res.send(reason);
 			//return res.send(reason);
+            
 		})
 };
 
@@ -130,13 +142,13 @@ module.exports.authValidator = function authValidator(req, res, next) {
     })
 }
 
-module.exports.ADLogout = function ADLogout(req, res) {
-    return ADLogoutCtrl(req)
+module.exports.logoutUser = function logoutUser(req, res) {
+    return logoutUserCtrl(req)
         .then((result) => {
             return res.send(result)
         })
         .catch(err => {
-            res.status(err.statusCode).send(reason)
+            res.send(err)
         })
         
 }

@@ -1,5 +1,6 @@
 const sql = require('./index')
 const utils = require('../../components/utils')
+const { query } = require('express')
 
 
 var refreshToken = (arg) => {
@@ -40,6 +41,52 @@ var refreshToken = (arg) => {
     })
 }
 
+var clearToken = arg => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const data = {
+                username: arg.body.username,
+            }
+    
+            query = `UPDATE auth_token SET auth_token = NULL WHERE ?`
+            
+            await sql.executeQuery(query, data)
+            return resolve()
+        } catch (err)  {
+            return reject (err)
+        }
+    })
+}
+
+var verifyToken = (arg) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            console.log('this is your token := ' + arg.body.auth_token)
+            query = `SELECT username, created_date FROM auth_token WHERE ?`
+
+            await sql.executeQuery(query, [arg.body.auth_token])
+                .then(records => {
+                    console.log(records)
+                    if(records ){
+                        let { username, created_date}  = records[0]
+                        console.log(records)
+                        return resolve ({username, created_date})
+                    }
+
+                    else return reject({ message: 'Authorization failed'})
+                })
+                .catch(err => {
+                    return reject({ message: 'System Error- SQL query' + err.message})
+                })
+
+        } catch(err) {
+            return reject (err)
+        }
+    })
+}
+
 module.exports = {
-    refreshToken: refreshToken
+    refreshToken : refreshToken,
+    clearToken :  clearToken,
+    verifyToken : verifyToken
 }
